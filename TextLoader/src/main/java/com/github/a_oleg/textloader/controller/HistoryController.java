@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class HistoryController {
 
     @RequestMapping(value = "/downloadHistory", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 
+    @ResponseBody
     public FileSystemResource downloadHistory(Model model) {
         ArrayList<Request> requests = historyService.createRequestsCollection();
         File file = historyService.createFileForData(requests);

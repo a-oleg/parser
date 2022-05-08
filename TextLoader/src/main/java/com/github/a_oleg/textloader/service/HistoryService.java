@@ -85,7 +85,7 @@ public class HistoryService {
             rowhead.createCell(0).setCellValue("There is no information on requests in the database");
         } else {
             int countRequests = 0;
-            for (int i = 0; i <= requests.size(); i++) {
+            for (int i = 0; i < requests.size(); i++) {
                 HSSFSheet sheet = workbook.createSheet("Request " + ++countRequests);
 
                 Request rqst = requests.get(i);

@@ -44,8 +44,7 @@ public class HistoryRepository {
         ArrayList<Integer> lastFiveRequest = new ArrayList<>();
         int idRequest = -1;
         try (Statement stmt = connectionDataBase.createStatement()) {
-            ResultSet resultSet = stmt.executeQuery("SELECT id_request FROM requests " +
-                        "WHERE id_request = (SELECT MAX(id_request) FROM requests);");
+            ResultSet resultSet = stmt.executeQuery("SELECT SELECT MAX(id_request) FROM requests;");
             while (resultSet.next()) {
                 idRequest = resultSet.getInt("id_request");
                 lastFiveRequest.add(idRequest);
