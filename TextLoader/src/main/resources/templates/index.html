@@ -33,13 +33,9 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item1" href="#" data-toggle="modal" data-target="#exampleModal">about the service</a>
               <a class="dropdown-item2" href="#" data-toggle="modal" data-target="#exampleModalCenter">about the developer</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="/downloadHistory">The last five requests<span class="sr-only">(current)</span></a>
+            </div>
           </li>
         </ul>
-      </div>
-      
     </nav>
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -91,12 +87,12 @@
         </div>
         <div class=" col-md-6 col-lg">
           <img class="d-block m-auto" src="files/clickdownload.png" alt="">
-          <span>Click "Upload text"</span>
+          <span>Click "Parse URL"</span>
           </a>
         </div>
         <div class=" col-md-6 col-lg =">
           <img class="d-block m-auto" src="files/downloadedtext.png" alt="">
-          <span>A text file with the contents of the pages will be downloaded to your computer</span>
+          <span>A file with the contents of the pages will be downloaded to your computer</span>
           </a>
         </div>
       </div>
@@ -113,14 +109,10 @@
       </form>
     </div>
 
-    <div class="container-fliud mt-5 pb-5 px-5">
+    <div class="container-fliud mt-0 pb-5 px-5">
       <!-- В action добавляю адрес сервера относительный java-файл controllets -->
       <form action = "/downloadHistory" method="POST" id = "downloadHistory" name="theForm">
-        <div class="form-group">
-          <label for="exampleFormControlTextarea1">Links</label>
-          <textarea name="URL" class="form-control" id="exampleFormControlTextarea2" rows="3" placeholder="https://www.site.com/category/article"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Download history</button>
+        <button type="submit" class="btn btn-primary">The last five requests</button>
       </form>
     </div>
 

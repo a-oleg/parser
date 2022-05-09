@@ -1,5 +1,6 @@
 package com.github.a_oleg.textloader.controller;
 
+import com.github.a_oleg.textloader.models.URL;
 import com.github.a_oleg.textloader.service.URLService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @Controller
 public class URLController {
@@ -27,17 +27,23 @@ public class URLController {
     @ResponseBody
     public FileSystemResource parseURL(@RequestParam(name = "URL", required = true) String url, Model model) {
         String [] arrayURL = url.split(",");
-        ArrayList<String> urlsForParse = new ArrayList<>();
+        ArrayList<String> linesForParse = new ArrayList<>();
         for (String arrayElement : arrayURL) {
-            urlsForParse.add(arrayElement);
+            linesForParse.add(arrayElement);
         }
-        HashMap<String, String> urlAndText = urlService.parseURL(urlsForParse);
+        ArrayList<URL> urls = urlService.createUrl(linesForParse);
+        ArrayList<URL> urlsForParse = urlService.parseURL(urls);
+        urlService.insertIntoDatabase(urlsForParse);
 
-        urlService.insertIntoDatabase(urlAndText);
-        File file = urlService.createFileForData(urlAndText);
+        File file = urlService.createFileForData(urlsForParse);
+
+        //HashMap<String, String> urlAndText = urlService.parseURL(linesForParse);
+
+        //urlService.insertIntoDatabase(urlAndText);
+        //File file = urlService.createFileForData(urlAndText);
 
         /*
-        //Код, возвращающий содержимое файлв на front-end. Необходим для тестирования приложения
+        //The code that returns the contents of the files to the front-end. Required for testing the application
         int countUrls = 0;
         for(String urlAdress : urlsForParse) {
             model.addAttribute("URL" + countUrls, urlAdress);
@@ -50,3 +56,28 @@ public class URLController {
         return new FileSystemResource(file);
     }
 }
+
+//    public FileSystemResource parseURL(@RequestParam(name = "URL", required = true) String url, Model model) {
+//        String [] arrayURL = url.split(",");
+//        ArrayList<String> urlsForParse = new ArrayList<>();
+//        for (String arrayElement : arrayURL) {
+//            urlsForParse.add(arrayElement);
+//        }
+//        HashMap<String, String> urlAndText = urlService.parseURL(urlsForParse);
+//
+//        urlService.insertIntoDatabase(urlAndText);
+//        File file = urlService.createFileForData(urlAndText);
+//
+//        /*
+//        //Код, возвращающий содержимое файлв на front-end. Необходим для тестирования приложения
+//        int countUrls = 0;
+//        for(String urlAdress : urlsForParse) {
+//            model.addAttribute("URL" + countUrls, urlAdress);
+//            model.addAttribute("textPage" + countUrls, urlAndText.get(urlAdress));
+//            countUrls++;
+//        }
+//        return "downloadResult";
+//         */
+//
+//        return new FileSystemResource(file);
+//    }

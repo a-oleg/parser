@@ -1,16 +1,24 @@
 package com.github.a_oleg.textloader.repository;
 
+import com.github.a_oleg.textloader.models.URL;
 import org.postgresql.util.PSQLException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 @Component
 public class URLRepository {
+    private final DBRepository dbRepository;
+
+    @Autowired
+    public URLRepository(DBRepository dbRepository) {
+        this.dbRepository = dbRepository;
+    }
+
     //Потом убрать поля в отдельный файл
     private static final String URL_DB = "jdbc:postgresql://localhost:5432/requestsandurls";
     private static final String URL_POSTGRES = "jdbc:postgresql://localhost:5432/";
@@ -29,81 +37,17 @@ public class URLRepository {
         try {
             connectionDataBase = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD);
         } catch (PSQLException e) {
-            createUrlsDatabase();
+            dbRepository.createUrlsDatabase();
         } catch (SQLException e) {
+            System.out.println("The database is missing. No requests to upload");
             e.printStackTrace();
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        System.out.println("Oppened database seccessfully");
-    }
-
-    /**Создание базы данных*/
-    public static void createUrlsDatabase() {
-        String requestsDB = "CREATE DATABASE requestsAndUrls";
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            connectionDataBase = DriverManager.getConnection(URL_POSTGRES, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try (Statement stmt = connectionDataBase.createStatement()) {
-            stmt.executeUpdate(requestsDB);
-            connectionDataBase.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Сreating database seccessfully");
-        createUrlsDatabaseTables();
-    }
-
-    /**Создание таблиц в базе данных*/
-    public static void createUrlsDatabaseTables() {
-        String requestsTable = "CREATE TABLE REQUESTS" +
-                "(id_request SERIAL PRIMARY KEY," +
-                "time_request TIMESTAMP NOT NULL);";
-        String urlsTable = "CREATE TABLE URLS" +
-                "(id_url SERIAL PRIMARY KEY," +
-                "url TEXT NOT NULL," +
-                "content TEXT NOT NULL);";
-        String requestsAndUrlsTable = "CREATE TABLE REQUESTSANDURLS" +
-                "(id_request_url SERIAL PRIMARY KEY," +
-                "id_request INT NOT NULL," +
-                "CONSTRAINT fk_REQUESTS FOREIGN KEY(id_request) REFERENCES REQUESTS(id_request)," +
-                "id_url INT NOT NULL," +
-                "CONSTRAINT fk_URLS FOREIGN KEY(id_url) REFERENCES URLS(id_url));";
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            connectionDataBase = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try (Statement stmt = connectionDataBase.createStatement()) {
-            stmt.executeUpdate(urlsTable);
-            stmt.executeUpdate(requestsTable);
-            stmt.executeUpdate(requestsAndUrlsTable);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
-            connectionDataBase.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Сreating tables seccessfully");
     }
 
     /**Метод, осуществляющий вставку данных в таблицы БД*/
-    public static boolean insertingDataIntoTables(HashMap<String, String> urlsAndTexts) throws SQLException {
+    public static boolean insertingDataIntoTables(ArrayList<URL> urls) throws SQLException {
         connectionDataBase = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD);
 
         LocalDateTime localDate = LocalDateTime.now();
@@ -113,9 +57,9 @@ public class URLRepository {
         preparedStatement.setTimestamp(1, Timestamp.valueOf(localDate));
         preparedStatement.executeUpdate();
 
-        for(Map.Entry urlsTexts: urlsAndTexts.entrySet()) {
-            String url = (String) urlsTexts.getKey();
-            String content = (String) urlsTexts.getValue();
+        for(URL urlModel: urls) {
+            String url = urlModel.getUrl();
+            String content = urlModel.getContent();
 
             preparedStatement = connectionDataBase.prepareStatement("INSERT INTO " +
                     "urls(url, content) VALUES(?, ?);");

@@ -1,7 +1,6 @@
 package com.github.a_oleg.textloader.repository;
 
-import com.github.a_oleg.textloader.models.Request;
-import com.github.a_oleg.textloader.models.URL;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +13,13 @@ import java.util.HashMap;
 
 @Component
 public class HistoryRepository {
+    private final DBRepository dbRepository;
+
+    @Autowired
+    public HistoryRepository(DBRepository dbRepository) {
+        this.dbRepository = dbRepository;
+    }
+
     private static final String URL_DB = "jdbc:postgresql://localhost:5432/requestsandurls";
     private static final String URL_POSTGRES = "jdbc:postgresql://localhost:5432/";
     private static final String USERNAME = "postgres";
@@ -30,13 +36,15 @@ public class HistoryRepository {
         }
         try {
             connectionDataBase = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD);
+        } catch (
+        PSQLException e) {
+            dbRepository.createUrlsDatabase();
         } catch (SQLException e) {
             System.out.println("The database is missing. No requests to upload");
             e.printStackTrace();
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        System.out.println("Oppened database seccessfully");
     }
 
     /**Метод, формирующий коллекцию из id пяти последних запросов*/
@@ -44,7 +52,7 @@ public class HistoryRepository {
         ArrayList<Integer> lastFiveRequest = new ArrayList<>();
         int idRequest = -1;
         try (Statement stmt = connectionDataBase.createStatement()) {
-            ResultSet resultSet = stmt.executeQuery("SELECT SELECT MAX(id_request) FROM requests;");
+            ResultSet resultSet = stmt.executeQuery("SELECT MAX(id_request) FROM requests;");
             while (resultSet.next()) {
                 idRequest = resultSet.getInt("id_request");
                 lastFiveRequest.add(idRequest);
