@@ -26,24 +26,25 @@ public class URLController {
     @RequestMapping(value = "/downloadResult", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
     public FileSystemResource parseURL(@RequestParam(name = "URL", required = true) String url, Model model) {
-        String [] arrayURL = url.split(",");
-        ArrayList<String> linesForParse = new ArrayList<>();
-        for (String arrayElement : arrayURL) {
-            linesForParse.add(arrayElement);
+        File file;
+        if(url == "") {
+            file = urlService.createFileForData(null);
+        } else {
+            String [] arrayURL = url.split("\r\n");
+            ArrayList<String> linesForParse = new ArrayList<>();
+            for (String arrayElement : arrayURL) {
+                linesForParse.add(arrayElement);
+            }
+            ArrayList<URL> urls = urlService.createUrl(linesForParse);
+            ArrayList<URL> urlsForParse = urlService.parseURL(urls);
+            urlService.insertIntoDatabase(urlsForParse);
+            file = urlService.createFileForData(urlsForParse);
         }
-        ArrayList<URL> urls = urlService.createUrl(linesForParse);
-        ArrayList<URL> urlsForParse = urlService.parseURL(urls);
-        urlService.insertIntoDatabase(urlsForParse);
-
-        File file = urlService.createFileForData(urlsForParse);
-
-        //HashMap<String, String> urlAndText = urlService.parseURL(linesForParse);
-
-        //urlService.insertIntoDatabase(urlAndText);
-        //File file = urlService.createFileForData(urlAndText);
+        return new FileSystemResource(file);
 
         /*
-        //The code that returns the contents of the files to the front-end. Required for testing the application
+        //Код, возвращающий содержимое файлв на front-end. Необходим для тестирования приложения
+        //The code that returns the contents of the file to the front-end. Required for testing the application
         int countUrls = 0;
         for(String urlAdress : urlsForParse) {
             model.addAttribute("URL" + countUrls, urlAdress);
@@ -52,32 +53,5 @@ public class URLController {
         }
         return "downloadResult";
          */
-
-        return new FileSystemResource(file);
     }
 }
-
-//    public FileSystemResource parseURL(@RequestParam(name = "URL", required = true) String url, Model model) {
-//        String [] arrayURL = url.split(",");
-//        ArrayList<String> urlsForParse = new ArrayList<>();
-//        for (String arrayElement : arrayURL) {
-//            urlsForParse.add(arrayElement);
-//        }
-//        HashMap<String, String> urlAndText = urlService.parseURL(urlsForParse);
-//
-//        urlService.insertIntoDatabase(urlAndText);
-//        File file = urlService.createFileForData(urlAndText);
-//
-//        /*
-//        //Код, возвращающий содержимое файлв на front-end. Необходим для тестирования приложения
-//        int countUrls = 0;
-//        for(String urlAdress : urlsForParse) {
-//            model.addAttribute("URL" + countUrls, urlAdress);
-//            model.addAttribute("textPage" + countUrls, urlAndText.get(urlAdress));
-//            countUrls++;
-//        }
-//        return "downloadResult";
-//         */
-//
-//        return new FileSystemResource(file);
-//    }

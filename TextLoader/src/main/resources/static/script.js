@@ -3,5 +3,5 @@ $("#parseUrl").on("submit", function(e){
     let urls = $("#exampleFormControlTextarea1").val();
     urls = urls.split("\n").join(",");
     $("#exampleFormControlTextarea1").val(urls);
-    document.theForm.submit();
+    document.getElementByld("parseUrl").submit();
 })

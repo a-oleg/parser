@@ -1,6 +1,7 @@
 package com.github.a_oleg.textloader.repository;
 
 import com.github.a_oleg.textloader.models.URL;
+import com.github.a_oleg.textloader.util.PropertiesUtil;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,11 +21,16 @@ public class URLRepository {
     }
 
     //Потом убрать поля в отдельный файл
-    private static final String URL_DB = "jdbc:postgresql://localhost:5432/requestsandurls";
-    private static final String URL_POSTGRES = "jdbc:postgresql://localhost:5432/";
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "postgres";
+    private static final String URL_KEY = "URL";
+    private static final String USERNAME_KEY = "USERNAME";
+    private static final String PASSWORD_KEY = "PASSWORD";
     private static Connection connectionDataBase;
+
+//    private static final String URL_DB = "jdbc:postgresql://localhost:5432/requestsandurls";
+//    private static final String URL_POSTGRES = "jdbc:postgresql://localhost:5432/";
+//    private static final String USERNAME = "postgres";
+//    private static final String PASSWORD = "postgres";
+//    private static Connection connectionDataBase;
 
     @PostConstruct
     /**Метод, открывающий БД*/
@@ -35,7 +41,8 @@ public class URLRepository {
             e.printStackTrace();
         }
         try {
-            connectionDataBase = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD);
+            connectionDataBase = DriverManager.getConnection(PropertiesUtil.get(URL_KEY), PropertiesUtil.get(USERNAME_KEY),
+                    PropertiesUtil.get(PASSWORD_KEY));
         } catch (PSQLException e) {
             dbRepository.createUrlsDatabase();
         } catch (SQLException e) {
@@ -47,8 +54,8 @@ public class URLRepository {
     }
 
     /**Метод, осуществляющий вставку данных в таблицы БД*/
-    public static boolean insertingDataIntoTables(ArrayList<URL> urls) throws SQLException {
-        connectionDataBase = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD);
+    public boolean insertingDataIntoTables(ArrayList<URL> urls) throws SQLException {
+        connectionDataBase = DriverManager.getConnection(URL_KEY, USERNAME_KEY, PASSWORD_KEY);
 
         LocalDateTime localDate = LocalDateTime.now();
 

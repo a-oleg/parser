@@ -65,29 +65,32 @@ public class URLService {
     /**Метод, создающий файл для выгрузки пользователю*/
     public File createFileForData(ArrayList<URL> urls) {
         String filename = "ContentFromTextloader.xls";
-
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("Content");
 
-        HSSFRow rowhead = sheet.createRow((short)0);
-        rowhead.createCell(0).setCellValue("Url");
-        rowhead.createCell(1).setCellValue("Content");
+        if(urls == null) {
+            HSSFRow nullRow = sheet.createRow((short)0);
+            nullRow.createCell(0).setCellValue("You didn't specify any url. Paste the url into the" +
+                    "\"Links\" field and click \"Parse url\"");
+        } else {
+            HSSFRow rowhead = sheet.createRow((short)0);
+            rowhead.createCell(0).setCellValue("Url");
+            rowhead.createCell(1).setCellValue("Content");
 
-        HSSFRow row;
-        int countEntry = 1;
-        for (URL url : urls) {
-            row = sheet.createRow((short)countEntry);
-            row.createCell(0).setCellValue(url.getUrl());
-            //Сделать проверку, что срока не более 32767 и отбросить более, чем 32 тыс
-            //row.createCell(1).setCellValue((String)entry.getValue());
-            String content = url.getContent();
-            //В ячейке xls-файла существует ограничение на 32767 символов, поэтому "обрезаю" строку
-            if(content.length() < 32767) {
-                row.createCell(1).setCellValue(content);
-            } else {
-                row.createCell(1).setCellValue(content.substring(0, 32765));
+            HSSFRow row;
+            int countEntry = 1;
+            for (URL url : urls) {
+                row = sheet.createRow((short)countEntry);
+                row.createCell(0).setCellValue(url.getUrl());
+                String content = url.getContent();
+                //В ячейке xls-файла существует ограничение на 32767 символов, поэтому "обрезаю" строку
+                if(content.length() < 32767) {
+                    row.createCell(1).setCellValue(content);
+                } else {
+                    row.createCell(1).setCellValue(content.substring(0, 32765));
+                }
+                countEntry++;
             }
-            countEntry++;
         }
 
         FileOutputStream fileOut = null;
@@ -107,56 +110,3 @@ public class URLService {
         return file;
     }
 }
-
-//    /**Метод, помещающий URL и контент в БД*/
-//    public void insertIntoDatabase(HashMap<String, String> urlAndText) {
-//        try {
-//            URLRepository.insertingDataIntoTables(urlAndText);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//    /**Метод, создающий файл для выгрузки пользователю*/
-//    public File createFileForData(HashMap<String, String> urlAndText) {
-//        String filename = "ContentFromTextloader.xls";
-//
-//        HSSFWorkbook workbook = new HSSFWorkbook();
-//        HSSFSheet sheet = workbook.createSheet("Content");
-//
-//        HSSFRow rowhead = sheet.createRow((short)0);
-//        rowhead.createCell(0).setCellValue("Url");
-//        rowhead.createCell(1).setCellValue("Content");
-//
-//        HSSFRow row;
-//        int countEntry = 1;
-//        for (Map.Entry entry: urlAndText.entrySet()) {
-//            row = sheet.createRow((short)countEntry);
-//            row.createCell(0).setCellValue((String)entry.getKey());
-//            //Сделать проверку, что срока не более 32767 и отбросить более, чем 32 тыс
-//            //row.createCell(1).setCellValue((String)entry.getValue());
-//            String content = (String)entry.getValue();
-//            //В ячейке xls-файла существует ограничение на 32767 символов, поэтому "обрезаю" строку
-//            if(content.length() < 32767) {
-//                row.createCell(1).setCellValue(content);
-//            } else {
-//                row.createCell(1).setCellValue(content.substring(0, 32765));
-//            }
-//            countEntry++;
-//        }
-//
-//        FileOutputStream fileOut = null;
-//        try {
-//            fileOut = new FileOutputStream(filename);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            workbook.write(fileOut);
-//            fileOut.close();
-//            workbook.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        File file = new File(filename);
-//        return file;
-//    }

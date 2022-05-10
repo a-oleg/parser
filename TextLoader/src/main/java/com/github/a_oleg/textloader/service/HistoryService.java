@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,24 +79,21 @@ public class HistoryService {
         String filename = "HistoryContentFromTextloader.xls";
         HSSFWorkbook workbook = new HSSFWorkbook();
 
-        int sizeRequestArray = requests.size();
-        if (sizeRequestArray == 0) {
+        if (requests.size() == 0) {
             HSSFSheet sheet = workbook.createSheet("Request");
             HSSFRow rowhead = sheet.createRow((short) 0);
             rowhead.createCell(0).setCellValue("There is no information on requests in the database");
         } else {
             int countRequests = 0;
             for (int i = 0; i < requests.size(); i++) {
-                HSSFSheet sheet = workbook.createSheet("Request " + ++countRequests);
-
                 Request rqst = requests.get(i);
                 ArrayList<URL> urls = rqst.getArrayURL();
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH.mm");
+                String dateAndTime = dtf.format(rqst.getTimeDownload());
 
-                HSSFRow rowtitle = sheet.createRow((short) 0);
-                rowtitle.createCell(0).setCellValue("Upload date:");
-                rowtitle.createCell(1).setCellValue(rqst.getTimeDownload());
+                HSSFSheet sheet = workbook.createSheet(++countRequests + " request " + " " + dateAndTime);
 
-                HSSFRow rowhead = sheet.createRow((short) 1);
+                HSSFRow rowhead = sheet.createRow((short)0);
                 rowhead.createCell(0).setCellValue("Url");
                 rowhead.createCell(1).setCellValue("Content");
 
@@ -132,46 +130,3 @@ public class HistoryService {
         return file;
     }
 }
-
-//    public File createFileForData(ArrayList<Request> requests) {
-//        String filename = "HistoryContentFromTextloader.xls";
-//
-//        HSSFWorkbook workbook = new HSSFWorkbook();
-//        for(int i = 1; i <= urlAndText.size(); i++) {
-//            HSSFSheet sheet = workbook.createSheet("Request " + i);
-//
-//            HSSFRow rowhead = sheet.createRow((short)0);
-//            rowhead.createCell(0).setCellValue("Url");
-//            rowhead.createCell(1).setCellValue("Content");
-//
-//            HSSFRow row;
-//            int countEntry = 1;
-//            for (Map.Entry entry: urlAndText.entrySet()) {
-//                row = sheet.createRow((short)countEntry);
-//                row.createCell(0).setCellValue((String)entry.getKey());
-//                String content = (String)entry.getValue();
-//                //В ячейке xls-файла существует ограничение на 32767 символов, поэтому "обрезаю" строку
-//                if(content.length() < 32767) {
-//                    row.createCell(1).setCellValue(content);
-//                } else {
-//                    row.createCell(1).setCellValue(content.substring(0, 32765));
-//                }
-//                countEntry++;
-//            }
-//        }
-//        FileOutputStream fileOut = null;
-//        try {
-//            fileOut = new FileOutputStream(filename);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            workbook.write(fileOut);
-//            fileOut.close();
-//            workbook.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        File file = new File(filename);
-//        return file;
-//    }
