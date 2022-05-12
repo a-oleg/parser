@@ -3,6 +3,7 @@ package com.github.a_oleg.textloader.service;
 import com.github.a_oleg.textloader.models.Request;
 import com.github.a_oleg.textloader.models.URL;
 import com.github.a_oleg.textloader.repository.HistoryRepository;
+import org.apache.commons.math3.util.Pair;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -130,3 +131,59 @@ public class HistoryService {
         return file;
     }
 }
+
+//    /**Метод, создающий файл для выгрузки пользователю*/
+//    public File createFileForData(ArrayList<Request> requests) {
+//        String filename = "HistoryContentFromTextloader.xls";
+//        HSSFWorkbook workbook = new HSSFWorkbook();
+//
+//        if (requests.size() == 0) {
+//            HSSFSheet sheet = workbook.createSheet("Request");
+//            HSSFRow rowhead = sheet.createRow((short) 0);
+//            rowhead.createCell(0).setCellValue("There is no information on requests in the database");
+//        } else {
+//            int countRequests = 0;
+//            for (int i = 0; i < requests.size(); i++) {
+//                Request rqst = requests.get(i);
+//                ArrayList<URL> urls = rqst.getArrayURL();
+//                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMM-dd-yyyy HH.mm");
+//                String dateAndTime = dtf.format(rqst.getTimeDownload());
+//
+//                HSSFSheet sheet = workbook.createSheet(++countRequests + " request " + " " + dateAndTime);
+//
+//                HSSFRow rowhead = sheet.createRow((short)0);
+//                rowhead.createCell(0).setCellValue("Url");
+//                rowhead.createCell(1).setCellValue("Content");
+//
+//                HSSFRow row;
+//                int countRow = 1;
+//                for (URL url : urls) {
+//                    row = sheet.createRow((short) countRow);
+//                    row.createCell(0).setCellValue(url.getUrl());
+//                    String content = url.getContent();
+//                    //В ячейке xls-файла существует ограничение на 32767 символов, поэтому "обрезаю" строку
+//                    if (content.length() < 32767) {
+//                        row.createCell(1).setCellValue(content);
+//                    } else {
+//                        row.createCell(1).setCellValue(content.substring(0, 32765));
+//                    }
+//                    countRow++;
+//                }
+//            }
+//        }
+//        FileOutputStream fileOut = null;
+//        try {
+//            fileOut = new FileOutputStream(filename);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            workbook.write(fileOut);
+//            fileOut.close();
+//            workbook.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        File file = new File(filename);
+//        return file;
+//    }

@@ -3,6 +3,7 @@ package com.github.a_oleg.textloader.controller;
 import com.github.a_oleg.textloader.models.URL;
 import com.github.a_oleg.textloader.service.URLService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,8 @@ import java.util.ArrayList;
 @Controller
 public class URLController {
     private final URLService urlService;
-
+    @Value("${USERNAME2}")
+    String userName2;
     @Autowired
     public URLController(URLService urlService) {
         this.urlService = urlService;
@@ -26,6 +28,7 @@ public class URLController {
     @RequestMapping(value = "/downloadResult", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
     public FileSystemResource parseURL(@RequestParam(name = "URL", required = true) String url, Model model) {
+        System.out.println("Юзернейм - " + userName2);
         File file;
         if(url == "") {
             file = urlService.createFileForData(null);
