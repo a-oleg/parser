@@ -52,11 +52,15 @@ public class HistoryService {
             id = entryRequest.getKey();
             timeDownload = entryRequest.getValue();
 
-            HashMap<Integer, Integer> idUrlForRequest = historyRepository.selectIdUrlsForRequest(entryRequest.getKey());
-            for (Map.Entry<Integer, Integer> entryUrl: idUrlForRequest.entrySet()) {
-                URL url = createURL(entryUrl.getValue());
-                arrayURL.add(url);
+            ArrayList<Integer> urls = historyRepository.selectIdUrlsForRequest(entryRequest.getKey());
+            for(int url : urls) {
+                URL urlModel = createURL(url);
+                arrayURL.add(urlModel);
             }
+//            for (Map.Entry<Integer, Integer> entryUrl: idUrlForRequest.entrySet()) {
+//                URL url = createURL(entryUrl.getValue());
+//                arrayURL.add(url);
+//            }
         }
         Request requestModel = new Request(id, timeDownload, arrayURL);
         return requestModel;

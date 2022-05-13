@@ -1,5 +1,6 @@
 package com.github.a_oleg.textloader.repository;
 
+import org.apache.commons.math3.util.Pair;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -83,20 +84,21 @@ public class HistoryRepository {
     }
 
     /**Метод, возвращающий id объектов URL, содержащихся в Request*/
-    public HashMap<Integer, Integer> selectIdUrlsForRequest (int idRequest) {
-        HashMap<Integer, Integer> IdUrlsForRequest = new HashMap<>();
+    public ArrayList<Integer> selectIdUrlsForRequest (int idRequest) {
+        ArrayList<Integer> urls = new ArrayList<>();
+        //HashMap<Integer, Integer> IdUrlsForRequest = new HashMap<>();
         int idUrl = -1;
         try (Statement stmt = connectionDataBase.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM requestsandurls " +
                     "WHERE id_request = " + idRequest + ";");
             while (resultSet.next()) {
                 idUrl = resultSet.getInt("id_url");
-                IdUrlsForRequest.put(idRequest, idUrl);
+                urls.add(idUrl);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return IdUrlsForRequest;
+        return urls;
     }
 
     /**Метод, возвращающий URL и контент для ID URL*/
