@@ -65,17 +65,18 @@ public class HistoryRepository {
     }
 
     /**Метод, возвращающий id и время Request*/
-    public HashMap<Integer, LocalDateTime> selectIdAndTimeRequest(int idRequestForSelect) {
-        HashMap<Integer, LocalDateTime> idAndTimeRequest = new HashMap<>();
+    public Pair selectIdAndTimeRequest(int idRequestForSelect) {
+        Pair <Integer, LocalDateTime> idAndTimeRequest = null;
         int idRequest = -1;
         LocalDateTime timeDownload = null;
+
         try (Statement stmt = connectionDataBase.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM requests " +
                     "WHERE id_request = " + idRequestForSelect + ";");
             while (resultSet.next()) {
                 idRequest = resultSet.getInt("id_request");
                 timeDownload = resultSet.getObject("time_request", LocalDateTime.class);
-                idAndTimeRequest.put(idRequest, timeDownload);
+                idAndTimeRequest = new Pair<Integer, LocalDateTime>(idRequest, timeDownload);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,7 +87,6 @@ public class HistoryRepository {
     /**Метод, возвращающий id объектов URL, содержащихся в Request*/
     public ArrayList<Integer> selectIdUrlsForRequest (int idRequest) {
         ArrayList<Integer> urls = new ArrayList<>();
-        //HashMap<Integer, Integer> IdUrlsForRequest = new HashMap<>();
         int idUrl = -1;
         try (Statement stmt = connectionDataBase.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT * FROM requestsandurls " +
