@@ -3,6 +3,7 @@ package com.github.a_oleg.textloader.repository;
 import org.apache.commons.math3.util.Pair;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,11 +21,13 @@ public class HistoryRepository {
     public HistoryRepository(DBRepository dbRepository) {
         this.dbRepository = dbRepository;
     }
+    @Value("${URL}")
+    String URL;
+    @Value("${USERNAMEDB}")
+    String USERNAME;
+    @Value("${PASSWORD}")
+    String PASSWORD;
 
-    private static final String URL_DB = "jdbc:postgresql://localhost:5432/requestsandurls";
-    private static final String URL_POSTGRES = "jdbc:postgresql://localhost:5432/";
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "postgres";
     private static Connection connectionDataBase;
 
     @PostConstruct
@@ -36,7 +39,7 @@ public class HistoryRepository {
             e.printStackTrace();
         }
         try {
-            connectionDataBase = DriverManager.getConnection(URL_DB, USERNAME, PASSWORD);
+            connectionDataBase = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (
         PSQLException e) {
             dbRepository.createUrlsDatabase();

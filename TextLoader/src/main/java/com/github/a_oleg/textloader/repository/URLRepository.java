@@ -1,9 +1,9 @@
 package com.github.a_oleg.textloader.repository;
 
 import com.github.a_oleg.textloader.models.URL;
-import com.github.a_oleg.textloader.util.PropertiesUtil;
 import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -19,18 +19,14 @@ public class URLRepository {
     public URLRepository(DBRepository dbRepository) {
         this.dbRepository = dbRepository;
     }
+    @Value("${URL}")
+    String URL;
+    @Value("${USERNAMEDB}")
+    String USERNAME;
+    @Value("${PASSWORD}")
+    String PASSWORD;
 
-    //Потом убрать поля в отдельный файл
-    private static final String URL_KEY = "URL";
-    private static final String USERNAME_KEY = "USERNAME";
-    private static final String PASSWORD_KEY = "PASSWORD";
     private static Connection connectionDataBase;
-
-//    private static final String URL_DB = "jdbc:postgresql://localhost:5432/requestsandurls";
-//    private static final String URL_POSTGRES = "jdbc:postgresql://localhost:5432/";
-//    private static final String USERNAME = "postgres";
-//    private static final String PASSWORD = "postgres";
-//    private static Connection connectionDataBase;
 
     @PostConstruct
     /**Метод, открывающий БД*/
@@ -41,8 +37,7 @@ public class URLRepository {
             e.printStackTrace();
         }
         try {
-            connectionDataBase = DriverManager.getConnection(PropertiesUtil.get(URL_KEY), PropertiesUtil.get(USERNAME_KEY),
-                    PropertiesUtil.get(PASSWORD_KEY));
+            connectionDataBase = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (PSQLException e) {
             dbRepository.createUrlsDatabase();
         } catch (SQLException e) {
@@ -55,7 +50,7 @@ public class URLRepository {
 
     /**Метод, осуществляющий вставку данных в таблицы БД*/
     public boolean insertingDataIntoTables(ArrayList<URL> urls) throws SQLException {
-        connectionDataBase = DriverManager.getConnection(URL_KEY, USERNAME_KEY, PASSWORD_KEY);
+        connectionDataBase = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
         LocalDateTime localDate = LocalDateTime.now();
 
