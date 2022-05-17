@@ -22,7 +22,7 @@ public class URLService {
     private final URLRepository URLRepository;
 
     @Autowired
-    public URLService(URLRepository URLRepository) {
+    private URLService(URLRepository URLRepository) {
         this.URLRepository = URLRepository;
     }
 
@@ -37,17 +37,21 @@ public class URLService {
 
     /**Метод, парсящий данные сайтов*/
     public ArrayList<URL> parseURL(ArrayList<URL> urls) {
-        //HashMap<String, String> urlsAndTexts = new HashMap<>();
         ArrayList<URL> urlsAndTexts = new ArrayList<>();
         Document htmlDocument = null;
 
         for(URL url : urls) {
+            String bodyTagText;
             try {
                 htmlDocument = Jsoup.connect(url.getUrl()).get();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String bodyTagText = htmlDocument.body().text();
+            try {
+                bodyTagText = htmlDocument.body().text();
+            } catch (NullPointerException e) {
+                bodyTagText = "Error: the \"body\" tag is missing or unavailable. It is impossible to parse the text";
+            }
             urlsAndTexts.add(new URL(url.getUrl(), bodyTagText));
         }
         return urlsAndTexts;
